@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Specification-Title: netmusiccanneedqq
+Specification-Vendor: Yincmewy, Yingyya
+Specification-Version: 1
+Implementation-Title: netmusiccanneedqq
+Implementation-Version: 0.1.0
+Implementation-Vendor: Yincmewy, Yingyya
+Implementation-Timestamp: 2026-02-11T22:06:34+0800
+MixinConfigs: netmusiccanneedqq.mixins.json
+

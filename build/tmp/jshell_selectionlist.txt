@@ -1,0 +1,12 @@
+import net.minecraft.client.gui.components.AbstractSelectionList;
+System.out.println("Fields:");
+for (var f : AbstractSelectionList.class.getDeclaredFields()) {
+    System.out.println(f.getName() + " " + f.getType().getName());
+}
+System.out.println("Methods:");
+for (var m : AbstractSelectionList.class.getDeclaredMethods()) {
+    if (m.getName().contains("Row") || m.getName().contains("scroll") || m.getName().contains("Scrollbar") || m.getName().contains("getX") || m.getName().contains("getLeft") || m.getName().contains("getRight")) {
+        System.out.println(m.getName() + "()" );
+    }
+}
+/exit

@@ -1,0 +1,7 @@
+Java Launcher: F:\Program Files\Java\jdk-17\bin\java.exe
+Arguments: '--inJar, C:\Users\Administrator\.gradle\caches\forge_gradle\minecraft_user_repo\net\minecraftforge\forge\1.20.1-47.4.10\forge-1.20.1-47.4.10-injected.jar, --outJar, C:\Users\Administrator\.gradle\caches\forge_gradle\minecraft_user_repo\net\minecraftforge\forge\1.20.1-47.4.10_mapped_parchment_2023.08.20-1.20.1\forge-1.20.1-47.4.10_mapped_parchment_2023.08.20-1.20.1.jar, --logFile, accesstransform.log, --atFile, H:\JavaProject\NetMusicCanNeedQQ\build\_atJar_4\parent_at.cfg'
+Classpath:
+ - C:\Users\Administrator\.gradle\caches\forge_gradle\maven_downloader\net\minecraftforge\accesstransformers\8.2.1\accesstransformers-8.2.1-fatjar.jar
+Working directory: H:\JavaProject\NetMusicCanNeedQQ\build\_atJar_4
+Main class: net.minecraftforge.accesstransformer.TransformerProcessor
+====================================
