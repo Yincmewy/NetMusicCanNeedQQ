@@ -1,23 +1,23 @@
 package yincmewy.netmusiccanneedqq.config;
 
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import yincmewy.netmusiccanneedqq.Netmusiccanneedqq;
 
-@Mod.EventBusSubscriber(modid = Netmusiccanneedqq.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Netmusiccanneedqq.MODID, bus = EventBusSubscriber.Bus.MOD)
 public final class ClientConfig {
-    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    public static final ForgeConfigSpec.EnumValue<ProviderType> DEFAULT_PROVIDER = BUILDER
+    public static final ModConfigSpec.EnumValue<ProviderType> DEFAULT_PROVIDER = BUILDER
             .comment("Default provider for the NetMusic CD burner")
             .defineEnum("defaultProvider", ProviderType.NETEASE);
-    public static final ForgeConfigSpec.ConfigValue<String> VIP_COOKIE = BUILDER
+    public static final ModConfigSpec.ConfigValue<String> VIP_COOKIE = BUILDER
             .comment("VIP cookie for QQ Music")
             .define("vipCookie", "");
 
-    public static final ForgeConfigSpec SPEC = BUILDER.build();
+    public static final ModConfigSpec SPEC = BUILDER.build();
 
     private static ProviderType currentProvider = ProviderType.NETEASE;
     private static String currentVipCookie = "";
@@ -32,6 +32,7 @@ public final class ClientConfig {
     public static void setProvider(ProviderType provider) {
         currentProvider = provider;
         DEFAULT_PROVIDER.set(provider);
+        saveConfig();
     }
 
     public static String getVipCookie() {
@@ -45,6 +46,7 @@ public final class ClientConfig {
     public static void setVipCookie(String cookie) {
         currentVipCookie = sanitizeCookie(cookie);
         VIP_COOKIE.set(currentVipCookie);
+        saveConfig();
     }
 
     private static String sanitizeCookie(String cookie) {
@@ -52,6 +54,14 @@ public final class ClientConfig {
             return "";
         }
         return cookie.trim();
+    }
+
+    private static void saveConfig() {
+        try {
+            SPEC.save();
+        } catch (RuntimeException e) {
+            Netmusiccanneedqq.LOGGER.warn("Failed to persist client config immediately", e);
+        }
     }
 
     @SubscribeEvent

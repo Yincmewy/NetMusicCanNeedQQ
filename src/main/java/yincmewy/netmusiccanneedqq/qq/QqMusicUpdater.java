@@ -3,7 +3,7 @@ package yincmewy.netmusiccanneedqq.qq;
 import com.github.tartaricacid.netmusic.item.ItemMusicCD;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.server.ServerLifecycleHooks;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import yincmewy.netmusiccanneedqq.Netmusiccanneedqq;
 import yincmewy.netmusiccanneedqq.data.SongInfoData;
 

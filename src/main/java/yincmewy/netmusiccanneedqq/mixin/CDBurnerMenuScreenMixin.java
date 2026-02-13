@@ -1,7 +1,7 @@
 package yincmewy.netmusiccanneedqq.mixin;
 
 import com.github.tartaricacid.netmusic.client.gui.CDBurnerMenuScreen;
-import net.minecraft.Util;
+import com.github.tartaricacid.netmusic.item.ItemMusicCD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
@@ -9,8 +9,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -100,7 +98,7 @@ public abstract class CDBurnerMenuScreenMixin extends AbstractContainerScreen<Ab
             ci.cancel();
             return;
         }
-        if (Util.isBlank(textField.getValue())) {
+        if (textField.getValue().isBlank()) {
             this.tips = Component.translatable("gui.netmusic.cd_burner.no_music_id");
             ci.cancel();
             return;
@@ -117,7 +115,7 @@ public abstract class CDBurnerMenuScreenMixin extends AbstractContainerScreen<Ab
                 netmusiccanneedqq$showVipCookieToast();
             }
             songInfo.vip = false;
-            NetMusicCanNeedQQNetwork.CHANNEL.sendToServer(new MarkQqDiscMessage(textField.getValue()));
+            NetMusicCanNeedQQNetwork.sendToServer(new MarkQqDiscMessage(textField.getValue()));
             if (!NetMusicCompat.sendSongToServer(songInfo)) {
                 this.tips = Component.translatable("gui.netmusic.cd_burner.get_info_error");
             }
@@ -211,17 +209,13 @@ public abstract class CDBurnerMenuScreenMixin extends AbstractContainerScreen<Ab
         if (cd.isEmpty() || !QqDiscNbt.isQqDisc(cd)) {
             return;
         }
-        NetMusicCanNeedQQNetwork.CHANNEL.sendToServer(new ClearQqDiscMessage());
+        NetMusicCanNeedQQNetwork.sendToServer(new ClearQqDiscMessage());
     }
 
     @Unique
     private boolean netmusiccanneedqq$isReadOnly(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null || !tag.contains("NetMusicSongInfo", Tag.TAG_COMPOUND)) {
-            return false;
-        }
-        CompoundTag infoTag = tag.getCompound("NetMusicSongInfo");
-        return infoTag.getBoolean("read_only");
+        ItemMusicCD.SongInfo info = ItemMusicCD.getSongInfo(stack);
+        return info != null && info.readOnly;
     }
 
     @Unique
@@ -230,7 +224,7 @@ public abstract class CDBurnerMenuScreenMixin extends AbstractContainerScreen<Ab
         if (minecraft == null) {
             return;
         }
-        minecraft.getToasts().addToast(new SystemToast(SystemToast.SystemToastIds.NARRATOR_TOGGLE,
+        minecraft.getToasts().addToast(new SystemToast(SystemToast.SystemToastId.NARRATOR_TOGGLE,
                 Component.literal("\u60A8\u9009\u4E2D\u7684\u662FVIP\u6B4C\u66F2\u4F46\u60A8\u6CA1\u6709\u8BBE\u7F6Evipcookie\uFF0C\u4EC5\u8BD5\u542C"),
                 null));
     }

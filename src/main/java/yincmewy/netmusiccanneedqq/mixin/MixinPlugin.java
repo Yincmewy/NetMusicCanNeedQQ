@@ -1,6 +1,6 @@
 package yincmewy.netmusiccanneedqq.mixin;
 
-import net.minecraftforge.fml.ModList;
+import net.neoforged.fml.ModList;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;

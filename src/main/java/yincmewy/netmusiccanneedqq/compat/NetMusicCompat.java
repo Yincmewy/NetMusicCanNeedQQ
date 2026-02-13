@@ -41,7 +41,11 @@ public final class NetMusicCompat {
             Object songInfo = songInfoCtor.newInstance(info.songUrl, info.songName, info.songTime, info.readOnly);
             applyOptionalFields(songInfo, info);
             Object message = setMessageCtor.newInstance(songInfo);
-            sendToServerMethod.invoke(channel, message);
+            if (channel != null) {
+                sendToServerMethod.invoke(channel, message);
+            } else {
+                sendToServerMethod.invoke(null, message);
+            }
             return true;
         } catch (ReflectiveOperationException e) {
             LOGGER.error("Failed to send NetMusic song info message", e);
@@ -59,9 +63,15 @@ public final class NetMusicCompat {
             songInfoCtor = songInfoClass.getConstructor(String.class, String.class, int.class, boolean.class);
             setMessageCtor = Class.forName(SET_MESSAGE_CLASS).getConstructor(songInfoClass);
             Class<?> networkHandlerClass = Class.forName(NETWORK_HANDLER_CLASS);
-            Field channelField = networkHandlerClass.getField("CHANNEL");
-            channel = channelField.get(null);
-            sendToServerMethod = channel.getClass().getMethod("sendToServer", Object.class);
+            try {
+                Field channelField = networkHandlerClass.getField("CHANNEL");
+                channel = channelField.get(null);
+                sendToServerMethod = channel.getClass().getMethod("sendToServer", Object.class);
+            } catch (NoSuchFieldException ignored) {
+                Class<?> payloadClass = Class.forName("net.minecraft.network.protocol.common.custom.CustomPacketPayload");
+                sendToServerMethod = networkHandlerClass.getMethod("sendToServer", payloadClass);
+                channel = null;
+            }
 
             transNameField = songInfoClass.getField("transName");
             vipField = songInfoClass.getField("vip");

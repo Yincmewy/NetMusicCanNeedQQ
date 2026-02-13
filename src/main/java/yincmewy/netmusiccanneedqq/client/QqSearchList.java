@@ -12,10 +12,9 @@ public class QqSearchList extends ObjectSelectionList<QqSearchList.Entry> {
     private final QqSearchScreen screen;
 
     public QqSearchList(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight, QqSearchScreen screen) {
-        super(minecraft, width, height, top, bottom, itemHeight);
+        super(minecraft, width, height, top, itemHeight);
         this.screen = screen;
-        this.setRenderBackground(false);
-        this.setRenderTopAndBottom(false);
+        this.updateSizeAndPosition(width, bottom - top, top);
     }
 
     public void setResults(List<QqSearchResult> results) {
@@ -36,6 +35,14 @@ public class QqSearchList extends ObjectSelectionList<QqSearchList.Entry> {
     @Override
     public int getRowWidth() {
         return this.getWidth() - 12;
+    }
+
+    @Override
+    protected void renderListBackground(GuiGraphics graphics) {
+    }
+
+    @Override
+    protected void renderListSeparators(GuiGraphics graphics) {
     }
 
     public static class Entry extends ObjectSelectionList.Entry<Entry> {

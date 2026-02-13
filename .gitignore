@@ -1,2 +1,7 @@
 _external/
 _vendor/
+build/
+run/
+runs/
+.gradle/
+.idea/

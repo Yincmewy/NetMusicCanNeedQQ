@@ -45,7 +45,7 @@ public class QqSearchScreen extends Screen {
         this.searchBox = new EditBox(this.font, boxX, boxY, boxWidth, SEARCH_HEIGHT, Component.literal("Search Box"));
         this.searchBox.setValue(initialQuery);
         this.searchBox.setBordered(true);
-        this.addWidget(this.searchBox);
+        this.addRenderableWidget(this.searchBox);
 
         this.searchButton = Button.builder(Component.literal("\u641C\u7D22"), button -> runSearch())
                 .pos(boxX + boxWidth + 4, boxY)
@@ -56,7 +56,7 @@ public class QqSearchScreen extends Screen {
         int listTop = boxY + SEARCH_HEIGHT + LIST_TOP_PADDING;
         int listBottom = this.height - 20;
         this.list = new QqSearchList(this.minecraft, this.width, this.height, listTop, listBottom, LIST_ITEM_HEIGHT, this);
-        this.addWidget(this.list);
+        this.addRenderableWidget(this.list);
 
         if (!this.initialQuery.isBlank()) {
             runSearch();
@@ -65,24 +65,19 @@ public class QqSearchScreen extends Screen {
 
     @Override
     public void tick() {
-        if (this.searchBox != null) {
-            this.searchBox.tick();
-        }
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics);
-        if (this.list != null) {
-            this.list.render(graphics, mouseX, mouseY, partialTick);
-        }
         super.render(graphics, mouseX, mouseY, partialTick);
-        if (this.searchBox != null) {
-            this.searchBox.render(graphics, mouseX, mouseY, partialTick);
-        }
         if (!this.status.getString().isEmpty()) {
             graphics.drawCenteredString(this.font, this.status, this.width / 2, 52, 0xCCCCCC);
         }
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        this.renderTransparentBackground(graphics);
     }
 
     @Override
