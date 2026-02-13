@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="VcsDirectoryMappings">
-    <mapping directory="$PROJECT_DIR$/NetMusicCanNeedQQ" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/_external/NetMusicLoginNeed" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/_external/netMusicListForge" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/_vendor/NetMusic" vcs="Git" />
-  </component>
-</project>

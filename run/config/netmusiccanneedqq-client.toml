@@ -1,6 +1,0 @@
-#Default provider for the NetMusic CD burner
-#Allowed Values: NETEASE, QQ
-defaultProvider = "QQ"
-#VIP cookie for QQ Music
-vipCookie = "RK=A8CSPlxAeB; ptcz=cf72ffe3ca149e47ad929b42a1b18a94add93dc1e33a3ab9204e0bd10199b2c9; pgv_pvid=5635154072; fqm_pvqid=2f5a6043-b68b-40dd-bb04-6b1ad2e3f8d8; ts_uid=985287758; psrf_access_token_expiresAt=1775968953; music_ignore_pskey=202306271436Hn@vBj; psrf_musickey_createtime=1770784953; fqm_sessionid=2e24e7cb-8141-42be-a70c-67aa78c74b3b; pgv_info=ssid=s2325453964; ts_refer=cn.bing.com/; _qpsvr_localtk=0.6921928370405049; ts_last=y.qq.com/n/ryqq_v2/player; wxopenid=opCFJw9293bSQpoW5pW2moEgzOs8; qqmusic_key=W_X_63B0auKXx1jNFrBdz-cAsODKwIdr5edIkTqr1yNtyyogrVVu4iMcLVJajBP2ziK-5s9mRyPPfkFoYv3DxxGQSt0PFvcNneg; psrf_qqaccess_token=; wxuin=1152921505146256543; tmeLoginType=1; psrf_qqunionid=; qm_keyst=W_X_63B0auKXx1jNFrBdz-cAsODKwIdr5edIkTqr1yNtyyogrVVu4iMcLVJajBP2ziK-5s9mRyPPfkFoYv3DxxGQSt0PFvcNneg; wxrefresh_token=101_ZmaMsX5tCUQpn6UcXDf2kfv9iUphCHaqu2Uhul1M1b5S7vrROZBUltA1p_2kJCVg5zjaPDhrvWsER7SVg8_AX7Fu7wpMxx1vQdQuboYgdwo; qm_keyst=W_X_63B0auKXx1jNFrBdz-cAsODKwIdr5edIkTqr1yNtyyogrVVu4iMcLVJajBP2ziK-5s9mRyPPfkFoYv3DxxGQSt0PFvcNneg; psrf_qqrefresh_token=; psrf_qqopenid=; wxunionid=oqFLxshTWHpeWwHTF1cD-YaqN8cs; wxuin=1152921505146256543; euin=oK6kowEAoK4z7K6P7w-k7w4Poz**; login_type=2"
-
