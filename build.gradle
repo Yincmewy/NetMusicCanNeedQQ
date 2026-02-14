@@ -140,9 +140,11 @@ repositories {
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
     maven { url = 'https://maven.shedaniel.me/' }
-    flatDir {
-        dirs "_vendor/NetMusic/build/libs", "_vendor/NetMusic/libs"
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
     }
+    mavenCentral()
 }
 
 dependencies {
@@ -152,14 +154,11 @@ dependencies {
     // If the group id is "net.minecraft" and the artifact id is one of ["client", "server", "joined"],
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly fg.deobf("netmusic:netmusic:1.2.1-forge+mc1.20.1")
-    runtimeOnly fg.deobf("netmusic:netmusic:1.2.1-forge+mc1.20.1")
-    minecraftLibrary "com.googlecode.soundlibs:mp3spi:1.9.5.4"
-    minecraftLibrary "com.googlecode.soundlibs:jlayer:1.0.1.4"
-    minecraftLibrary "com.googlecode.soundlibs:tritonus-share:0.3.7.4"
-    minecraftLibrary(name: "jflac-codec-1.5.3-SNAPSHOT", ext: "jar")
-    compileOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:11.1.106")
-    runtimeOnly fg.deobf("me.shedaniel.cloth:cloth-config-forge:11.1.106")
+    implementation fg.deobf("me.shedaniel.cloth:cloth-config-forge:11.1.136")
+
+    implementation fg.deobf("maven.modrinth:net-music:${netmusic_version}-forge+mc${minecraft_version}")
+    implementation fg.deobf("maven.modrinth:net-music-play-list:${netmusic_playlist_version}")
+    compileOnly fg.deobf("maven.modrinth:netmusic-loginneed:${login_need_version}-${minecraft_version}")
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
@@ -217,4 +216,3 @@ tasks.named('jar', Jar).configure {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
-

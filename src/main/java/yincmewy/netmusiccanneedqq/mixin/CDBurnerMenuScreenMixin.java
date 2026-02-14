@@ -62,23 +62,13 @@ public abstract class CDBurnerMenuScreenMixin extends AbstractContainerScreen<Ab
         super(menu, inventory, title);
     }
 
-    @Inject(method = "init", at = @At("TAIL"), require = 0)
+    @Inject(method = "init", at = @At("TAIL"), require = 0, remap = true)
     private void netmusiccanneedqq$init(CallbackInfo ci) {
         netmusiccanneedqq$initCommon();
     }
 
-    @Inject(method = "m_7856_", at = @At("TAIL"), require = 0)
-    private void netmusiccanneedqq$initObf(CallbackInfo ci) {
-        netmusiccanneedqq$initCommon();
-    }
-
-    @Inject(method = "resize", at = @At("TAIL"), require = 0)
+    @Inject(method = "resize", at = @At("TAIL"), require = 0, remap = true)
     private void netmusiccanneedqq$resize(Minecraft minecraft, int width, int height, CallbackInfo ci) {
-        netmusiccanneedqq$updateSearchUi();
-    }
-
-    @Inject(method = "m_6574_", at = @At("TAIL"), require = 0)
-    private void netmusiccanneedqq$resizeObf(Minecraft minecraft, int width, int height, CallbackInfo ci) {
         netmusiccanneedqq$updateSearchUi();
     }
 

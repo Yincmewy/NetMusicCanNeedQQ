@@ -4,7 +4,6 @@
   "package": "yincmewy.netmusiccanneedqq.mixin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "netmusiccanneedqq.refmap.json",
-  "plugin": "yincmewy.netmusiccanneedqq.mixin.MixinPlugin",
   "mixins": [
     "ItemMusicCDMixin",
     "NetMusicListItemMixin"

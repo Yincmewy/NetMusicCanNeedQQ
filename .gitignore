@@ -1,2 +1,9 @@
 _external/
 _vendor/
+/run/
+/runs/
+/run-data/
+/src/generated/
+/build/
+/.gradle/
+/.idea/
