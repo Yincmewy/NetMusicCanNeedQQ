@@ -15,13 +15,9 @@ public abstract class BlockMusicPlayerMixin {
         return netmusiccanneedqq$refreshQqSong(stack);
     }
 
-    @Redirect(method = "use", require = 0, at = @At(value = "INVOKE", target = "Lcom/github/tartaricacid/netmusic/item/ItemMusicCD;getSongInfo(Lnet/minecraft/world/item/ItemStack;)Lcom/github/tartaricacid/netmusic/item/ItemMusicCD$SongInfo;"))
-    private ItemMusicCD.SongInfo netmusiccanneedqq$refreshQqSongDeobf(ItemStack stack) {
-        return netmusiccanneedqq$refreshQqSong(stack);
-    }
-
-    @Redirect(method = "m_6227_", require = 0, at = @At(value = "INVOKE", target = "Lcom/github/tartaricacid/netmusic/item/ItemMusicCD;getSongInfo(Lnet/minecraft/world/item/ItemStack;)Lcom/github/tartaricacid/netmusic/item/ItemMusicCD$SongInfo;"))
-    private ItemMusicCD.SongInfo netmusiccanneedqq$refreshQqSongObf(ItemStack stack) {
+    @Redirect(method = "use", require = 0, remap = true,
+            at = @At(value = "INVOKE", target = "Lcom/github/tartaricacid/netmusic/item/ItemMusicCD;getSongInfo(Lnet/minecraft/world/item/ItemStack;)Lcom/github/tartaricacid/netmusic/item/ItemMusicCD$SongInfo;", remap = false))
+    private ItemMusicCD.SongInfo netmusiccanneedqq$refreshQqSongUse(ItemStack stack) {
         return netmusiccanneedqq$refreshQqSong(stack);
     }
 

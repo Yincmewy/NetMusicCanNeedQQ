@@ -3,7 +3,6 @@
   "minVersion": "0.8",
   "package": "yincmewy.netmusiccanneedqq.mixin",
   "compatibilityLevel": "JAVA_21",
-  "plugin": "yincmewy.netmusiccanneedqq.mixin.MixinPlugin",
   "mixins": [
     "ItemMusicCDMixin",
     "NetMusicListItemMixin"
