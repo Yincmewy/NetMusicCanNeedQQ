@@ -11,6 +11,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import yincmewy.netmusiccanneedqq.Netmusiccanneedqq;
 import yincmewy.netmusiccanneedqq.qq.QqDiscNbt;
+import yincmewy.netmusiccanneedqq.qq.QqMusicUpdater;
 
 public record MarkQqDiscMessage(String qqInput) implements CustomPacketPayload {
     public static final Type<MarkQqDiscMessage> TYPE =
@@ -34,6 +35,7 @@ public record MarkQqDiscMessage(String qqInput) implements CustomPacketPayload {
                 ItemStack stack = menu.getInput().getStackInSlot(0);
                 if (!stack.isEmpty()) {
                     QqDiscNbt.markQq(stack, message.qqInput());
+                    QqMusicUpdater.prefetch(message.qqInput());
                 }
             }
         });

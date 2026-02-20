@@ -26,6 +26,7 @@ import yincmewy.netmusiccanneedqq.Netmusiccanneedqq;
 import yincmewy.netmusiccanneedqq.compat.NetMusicCompat;
 import yincmewy.netmusiccanneedqq.config.ClientConfig;
 import yincmewy.netmusiccanneedqq.config.ProviderType;
+import yincmewy.netmusiccanneedqq.config.VipCookieState;
 import yincmewy.netmusiccanneedqq.data.SongInfoData;
 import yincmewy.netmusiccanneedqq.network.ClearQqDiscMessage;
 import yincmewy.netmusiccanneedqq.network.MarkQqDiscMessage;
@@ -101,7 +102,7 @@ public abstract class CDBurnerMenuScreenMixin extends AbstractContainerScreen<Ab
                 return;
             }
             songInfo.readOnly = this.readOnlyButton.selected();
-            if (songInfo.vip && !ClientConfig.hasVipCookie()) {
+            if (songInfo.vip && !VipCookieState.canSkipVipCookieWarningOnClient()) {
                 netmusiccanneedqq$showVipCookieToast();
             }
             songInfo.vip = false;
