@@ -12,6 +12,7 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.slf4j.Logger;
 import yincmewy.netmusiccanneedqq.config.ClientConfig;
 import yincmewy.netmusiccanneedqq.config.ClientConfigScreen;
+import yincmewy.netmusiccanneedqq.config.ServerConfig;
 import yincmewy.netmusiccanneedqq.network.NetMusicCanNeedQQNetwork;
 
 @Mod(Netmusiccanneedqq.MODID)
@@ -25,6 +26,7 @@ public class Netmusiccanneedqq {
     public Netmusiccanneedqq() {
         NetMusicCanNeedQQNetwork.init();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ServerConfig.SPEC);
         if (FMLEnvironment.dist.isClient() && ModList.get().isLoaded("cloth_config")) {
             ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
                     () -> new ConfigScreenHandler.ConfigScreenFactory((client, parent) -> ClientConfigScreen.create(parent)));

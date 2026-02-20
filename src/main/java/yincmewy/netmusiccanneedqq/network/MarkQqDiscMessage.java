@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 import yincmewy.netmusiccanneedqq.qq.QqDiscNbt;
+import yincmewy.netmusiccanneedqq.qq.QqMusicUpdater;
 
 import java.util.function.Supplier;
 
@@ -36,6 +37,7 @@ public class MarkQqDiscMessage {
                     ItemStack stack = menu.getInput().getStackInSlot(0);
                     if (!stack.isEmpty()) {
                         QqDiscNbt.markQq(stack, message.qqInput);
+                        QqMusicUpdater.prefetch(message.qqInput);
                     }
                 }
             });

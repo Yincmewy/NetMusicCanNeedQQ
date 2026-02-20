@@ -5,6 +5,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import yincmewy.netmusiccanneedqq.Netmusiccanneedqq;
+import yincmewy.netmusiccanneedqq.config.VipCookieState;
 import yincmewy.netmusiccanneedqq.data.SongInfoData;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,11 +15,26 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class QqMusicUpdater {
-    private static final long REQUEST_COOLDOWN_MS = 15_000L;
+    private static final long REQUEST_COOLDOWN_MS = 28_800_000L;
     private static final ConcurrentHashMap<String, RefreshState> REFRESH_STATES = new ConcurrentHashMap<>();
     private static final ExecutorService REFRESH_EXECUTOR = Executors.newFixedThreadPool(2, new RefreshThreadFactory());
 
     private QqMusicUpdater() {
+    }
+
+    public static void prefetch(String qqInput) {
+        if (qqInput == null || qqInput.isBlank()) {
+            return;
+        }
+        RefreshState state = REFRESH_STATES.computeIfAbsent(qqInput, ignored -> new RefreshState());
+        long now = System.currentTimeMillis();
+        SongInfoData cached = state.cachedSong;
+        if (cached != null && hasText(cached.songUrl) && now - state.lastRequestAt < REQUEST_COOLDOWN_MS) {
+            return;
+        }
+        if (now - state.lastRequestAt >= REQUEST_COOLDOWN_MS) {
+            requestRefreshAsync(qqInput, state, now);
+        }
     }
 
     public static ItemMusicCD.SongInfo refreshIfNeeded(ItemStack stack, ItemMusicCD.SongInfo info) {
@@ -50,9 +66,10 @@ public final class QqMusicUpdater {
             return;
         }
         state.lastRequestAt = now;
+        String serverVipCookie = VipCookieState.getServerEffectiveVipCookie();
         REFRESH_EXECUTOR.execute(() -> {
             try {
-                SongInfoData updated = QqMusicUtils.resolveSong(qqInput);
+                SongInfoData updated = QqMusicUtils.resolveSong(qqInput, serverVipCookie);
                 if (updated == null || updated.songUrl == null || updated.songUrl.isBlank()) {
                     return;
                 }

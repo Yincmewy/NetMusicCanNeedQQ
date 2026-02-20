@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import yincmewy.netmusiccanneedqq.Netmusiccanneedqq;
-import yincmewy.netmusiccanneedqq.config.ClientConfig;
+import yincmewy.netmusiccanneedqq.config.VipCookieState;
 import yincmewy.netmusiccanneedqq.data.SongInfoData;
 import yincmewy.netmusiccanneedqq.data.SongNameData;
 
@@ -90,10 +90,14 @@ public final class QqMusicUtils {
     }
 
     public static SongInfoData resolveSong(String input) throws Exception {
+        return resolveSong(input, null);
+    }
+
+    public static SongInfoData resolveSong(String input, String preferredCookie) throws Exception {
         if (input == null || input.isBlank()) {
             throw new RuntimeException("");
         }
-        TrackInfo trackInfo = getTrackInfoByMid(input);
+        TrackInfo trackInfo = getTrackInfoByMid(input, preferredCookie);
         String mediaMid = trackInfo.mediaMid;
         if (mediaMid == null || mediaMid.isBlank()) {
             mediaMid = input;
@@ -108,7 +112,7 @@ public final class QqMusicUtils {
             put("Sec-Fetch-Site", "same-origin");
             put("Referer", "https://y.qq.com/");
         }};
-        applyVipCookie(headers);
+        applyVipCookie(headers, preferredCookie);
         JsonObject vkeyData = requestVkeyData(input, mediaMid, headers);
         String baseUrl = resolveBaseUrl(vkeyData);
         String songPurl = selectBestPurl(vkeyData.getAsJsonArray("midurlinfo"));
@@ -128,11 +132,11 @@ public final class QqMusicUtils {
     }
 
     public static SongNameData getSongNameByMid(String mid) {
-        TrackInfo info = getTrackInfoByMid(mid);
+        TrackInfo info = getTrackInfoByMid(mid, null);
         return new SongNameData(info.songName, info.interval);
     }
 
-    private static TrackInfo getTrackInfoByMid(String mid) {
+    private static TrackInfo getTrackInfoByMid(String mid, String preferredCookie) {
         try {
             var headers = new HashMap<String, String>() {{
                 put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0");
@@ -144,7 +148,7 @@ public final class QqMusicUtils {
                 put("Sec-Fetch-Site", "same-origin");
                 put("Referer", "https://y.qq.com/");
             }};
-            applyVipCookie(headers);
+            applyVipCookie(headers, preferredCookie);
             var response = postJson("https://u.y.qq.com/cgi-bin/musicu.fcg", """
                 {"req_1":{"module":"music.pf_song_detail_svr","method":"get_song_detail","param":{"song_mid":"%s","song_id":0},"loginUin":"0","comm":{"uin":"0","format":"json","ct":24,"cv":0}}}
                 """.formatted(mid), headers);
@@ -278,7 +282,14 @@ public final class QqMusicUtils {
     }
 
     private static void applyVipCookie(Map<String, String> requestPropertyData) {
-        String cookie = ClientConfig.getVipCookie();
+        applyVipCookie(requestPropertyData, null);
+    }
+
+    private static void applyVipCookie(Map<String, String> requestPropertyData, String preferredCookie) {
+        String cookie = preferredCookie;
+        if (cookie == null || cookie.isBlank()) {
+            cookie = VipCookieState.getClientEffectiveVipCookie();
+        }
         if (cookie != null && !cookie.isBlank()) {
             requestPropertyData.put("Cookie", cookie);
         }
