@@ -1,5 +1,7 @@
 package yincmewy.netmusiccanneedqq.config;
 
+import yincmewy.netmusiccanneedqq.qq.QqCredentialManager;
+
 public final class VipCookieState {
     private static volatile boolean serverVipCookieAvailable;
 
@@ -7,6 +9,10 @@ public final class VipCookieState {
     }
 
     public static String getClientEffectiveVipCookie() {
+        String cred = QqCredentialManager.getEffectiveCookie();
+        if (hasText(cred)) {
+            return cred;
+        }
         return sanitizeCookie(ClientConfig.getVipCookie());
     }
 
@@ -15,6 +21,10 @@ public final class VipCookieState {
     }
 
     public static String getServerEffectiveVipCookie() {
+        String cred = QqCredentialManager.getEffectiveCookie();
+        if (hasText(cred)) {
+            return cred;
+        }
         return firstNonBlank(ServerConfig.getVipCookie(), ClientConfig.getVipCookie());
     }
 
@@ -23,7 +33,9 @@ public final class VipCookieState {
     }
 
     public static boolean canSkipVipCookieWarningOnClient() {
-        return hasClientEffectiveVipCookie() || hasServerVipCookieAvailable();
+        return QqCredentialManager.hasValidCredential()
+                || hasClientEffectiveVipCookie()
+                || hasServerVipCookieAvailable();
     }
 
     public static void setServerVipCookieAvailable(boolean available) {

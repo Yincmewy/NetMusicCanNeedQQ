@@ -5,6 +5,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import yincmewy.netmusiccanneedqq.Netmusiccanneedqq;
+import yincmewy.netmusiccanneedqq.config.QualityLevel;
 import yincmewy.netmusiccanneedqq.config.VipCookieState;
 import yincmewy.netmusiccanneedqq.data.SongInfoData;
 
@@ -22,19 +23,12 @@ public final class QqMusicUpdater {
     private QqMusicUpdater() {
     }
 
-    public static void prefetch(String qqInput) {
+    public static void prefetch(String qqInput, QualityLevel quality) {
         if (qqInput == null || qqInput.isBlank()) {
             return;
         }
         RefreshState state = REFRESH_STATES.computeIfAbsent(qqInput, ignored -> new RefreshState());
-        long now = System.currentTimeMillis();
-        SongInfoData cached = state.cachedSong;
-        if (cached != null && hasText(cached.songUrl) && now - state.lastRequestAt < REQUEST_COOLDOWN_MS) {
-            return;
-        }
-        if (now - state.lastRequestAt >= REQUEST_COOLDOWN_MS) {
-            requestRefreshAsync(qqInput, state, now);
-        }
+        state.lastRequestAt = System.currentTimeMillis();
     }
 
     public static ItemMusicCD.SongInfo refreshIfNeeded(ItemStack stack, ItemMusicCD.SongInfo info) {
@@ -56,12 +50,13 @@ public final class QqMusicUpdater {
         }
         long now = System.currentTimeMillis();
         if (now - state.lastRequestAt >= REQUEST_COOLDOWN_MS) {
-            requestRefreshAsync(qqInput, state, now);
+            QualityLevel quality = QqDiscNbt.getQuality(stack);
+            requestRefreshAsync(qqInput, state, now, quality);
         }
         return info;
     }
 
-    private static void requestRefreshAsync(String qqInput, RefreshState state, long now) {
+    private static void requestRefreshAsync(String qqInput, RefreshState state, long now, QualityLevel quality) {
         if (!state.inFlight.compareAndSet(false, true)) {
             return;
         }
@@ -69,7 +64,7 @@ public final class QqMusicUpdater {
         String serverVipCookie = VipCookieState.getServerEffectiveVipCookie();
         REFRESH_EXECUTOR.execute(() -> {
             try {
-                SongInfoData updated = QqMusicUtils.resolveSong(qqInput, serverVipCookie);
+                SongInfoData updated = QqMusicUtils.resolveSong(qqInput, serverVipCookie, quality);
                 if (updated == null || updated.songUrl == null || updated.songUrl.isBlank()) {
                     return;
                 }

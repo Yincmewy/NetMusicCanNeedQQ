@@ -16,9 +16,14 @@ public final class ServerConfig {
             .comment("VIP cookie for QQ Music, only used on server side")
             .define("vipCookie", "");
 
+    public static final ForgeConfigSpec.EnumValue<QualityLevel> QUALITY = BUILDER
+            .comment("Max audio quality for QQ Music. LOSSLESS may cause playback stuttering with large files.")
+            .defineEnum("quality", QualityLevel.HIGH);
+
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     private static String currentVipCookie = "";
+    private static QualityLevel currentQuality = QualityLevel.HIGH;
 
     private ServerConfig() {
     }
@@ -29,6 +34,10 @@ public final class ServerConfig {
 
     public static boolean hasVipCookie() {
         return currentVipCookie != null && !currentVipCookie.isBlank();
+    }
+
+    public static QualityLevel getQuality() {
+        return currentQuality;
     }
 
     private static String sanitizeCookie(String cookie) {
@@ -44,6 +53,7 @@ public final class ServerConfig {
             return;
         }
         currentVipCookie = sanitizeCookie(VIP_COOKIE.get());
+        currentQuality = QUALITY.get();
         var server = ServerLifecycleHooks.getCurrentServer();
         if (server != null) {
             server.execute(() -> ServerVipCookieStateSyncHandler.syncToAll(server));

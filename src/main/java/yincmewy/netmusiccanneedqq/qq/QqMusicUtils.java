@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import yincmewy.netmusiccanneedqq.Netmusiccanneedqq;
+import yincmewy.netmusiccanneedqq.config.QualityLevel;
 import yincmewy.netmusiccanneedqq.config.VipCookieState;
 import yincmewy.netmusiccanneedqq.data.SongInfoData;
 import yincmewy.netmusiccanneedqq.data.SongNameData;
@@ -26,9 +27,6 @@ import java.util.Map;
 public final class QqMusicUtils {
     private static final String DEFAULT_SIP = "http://ws.stream.qqmusic.qq.com/";
     private static final FileCandidate[] QUALITY_CANDIDATES = new FileCandidate[] {
-            new FileCandidate("AI00", "flac"),
-            new FileCandidate("Q000", "flac"),
-            new FileCandidate("Q001", "flac"),
             new FileCandidate("F000", "flac"),
             new FileCandidate("M800", "mp3"),
             new FileCandidate("M500", "mp3"),
@@ -90,10 +88,14 @@ public final class QqMusicUtils {
     }
 
     public static SongInfoData resolveSong(String input) throws Exception {
-        return resolveSong(input, null);
+        return resolveSong(input, null, null);
     }
 
     public static SongInfoData resolveSong(String input, String preferredCookie) throws Exception {
+        return resolveSong(input, preferredCookie, null);
+    }
+
+    public static SongInfoData resolveSong(String input, String preferredCookie, QualityLevel quality) throws Exception {
         if (input == null || input.isBlank()) {
             throw new RuntimeException("");
         }
@@ -113,7 +115,14 @@ public final class QqMusicUtils {
             put("Referer", "https://y.qq.com/");
         }};
         applyVipCookie(headers, preferredCookie);
-        JsonObject vkeyData = requestVkeyData(input, mediaMid, headers);
+        if (quality == null) {
+            quality = QualityLevel.HIGH;
+        }
+        int offset = quality.getCandidateOffset();
+        FileCandidate[] candidates = offset > 0
+                ? java.util.Arrays.copyOfRange(QUALITY_CANDIDATES, offset, QUALITY_CANDIDATES.length)
+                : QUALITY_CANDIDATES;
+        JsonObject vkeyData = requestVkeyData(input, mediaMid, headers, candidates);
         String baseUrl = resolveBaseUrl(vkeyData);
         String songPurl = selectBestPurl(vkeyData.getAsJsonArray("midurlinfo"));
         if (songPurl == null || songPurl.isBlank()) {
@@ -179,11 +188,11 @@ public final class QqMusicUtils {
         return new TrackInfo("", 0, "", false);
     }
 
-    private static JsonObject requestVkeyData(String songMid, String mediaMid, Map<String, String> requestPropertyData) throws IOException {
+    private static JsonObject requestVkeyData(String songMid, String mediaMid, Map<String, String> requestPropertyData, FileCandidate[] candidates) throws IOException {
         JsonArray filenameList = new JsonArray();
         JsonArray songMidList = new JsonArray();
         JsonArray songTypeList = new JsonArray();
-        for (FileCandidate candidate : QUALITY_CANDIDATES) {
+        for (FileCandidate candidate : candidates) {
             filenameList.add(candidate.buildFilename(mediaMid));
             songMidList.add(songMid);
             songTypeList.add(0);
@@ -239,8 +248,7 @@ public final class QqMusicUtils {
         if (midurlinfo == null) {
             return "";
         }
-        int limit = Math.min(midurlinfo.size(), QUALITY_CANDIDATES.length);
-        for (int i = 0; i < limit; i++) {
+        for (int i = 0; i < midurlinfo.size(); i++) {
             var info = midurlinfo.get(i).getAsJsonObject();
             if (info != null && info.has("purl")) {
                 String purl = info.get("purl").getAsString();
