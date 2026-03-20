@@ -16,11 +16,15 @@ public final class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<String> VIP_COOKIE = BUILDER
             .comment("VIP cookie for QQ Music")
             .define("vipCookie", "");
+    public static final ForgeConfigSpec.EnumValue<QualityLevel> QUALITY = BUILDER
+            .comment("Max audio quality for QQ Music. LOSSLESS may cause playback stuttering with large files.")
+            .defineEnum("quality", QualityLevel.HIGH);
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
     private static ProviderType currentProvider = ProviderType.NETEASE;
     private static String currentVipCookie = "";
+    private static QualityLevel currentQuality = QualityLevel.HIGH;
 
     private ClientConfig() {
     }
@@ -42,6 +46,15 @@ public final class ClientConfig {
         return currentVipCookie != null && !currentVipCookie.isBlank();
     }
 
+    public static QualityLevel getQuality() {
+        return currentQuality;
+    }
+
+    public static void setQuality(QualityLevel quality) {
+        currentQuality = quality;
+        QUALITY.set(quality);
+    }
+
     public static void setVipCookie(String cookie) {
         currentVipCookie = sanitizeCookie(cookie);
         VIP_COOKIE.set(currentVipCookie);
@@ -59,6 +72,7 @@ public final class ClientConfig {
         if (event.getConfig().getSpec() == SPEC) {
             currentProvider = DEFAULT_PROVIDER.get();
             currentVipCookie = sanitizeCookie(VIP_COOKIE.get());
+            currentQuality = QUALITY.get();
         }
     }
 }

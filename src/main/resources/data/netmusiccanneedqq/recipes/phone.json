@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "GCG",
+    "IDI"
+  ],
+  "key": {
+    "I": { "item": "minecraft:iron_ingot" },
+    "G": { "item": "minecraft:gold_ingot" },
+    "C": { "item": "minecraft:glowstone_dust" },
+    "D": { "item": "minecraft:diamond" }
+  },
+  "result": {
+    "item": "netmusiccanneedqq:phone",
+    "count": 1
+  }
+}
