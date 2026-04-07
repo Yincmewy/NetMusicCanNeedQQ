@@ -1,6 +1,7 @@
 package yincmewy.netmusiccanneedqq.network;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -12,8 +13,10 @@ public record SyncServerVipCookieStateMessage(boolean hasServerVipCookie) implem
     public static final Type<SyncServerVipCookieStateMessage> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(Netmusiccanneedqq.MODID, "sync_server_vip_cookie_state"));
     public static final StreamCodec<ByteBuf, SyncServerVipCookieStateMessage> STREAM_CODEC =
-            StreamCodec.of((buffer, message) -> buffer.writeBoolean(message.hasServerVipCookie()),
-                    buffer -> new SyncServerVipCookieStateMessage(buffer.readBoolean()));
+            StreamCodec.composite(
+                    ByteBufCodecs.BOOL,
+                    SyncServerVipCookieStateMessage::hasServerVipCookie,
+                    SyncServerVipCookieStateMessage::new);
 
     public static void handle(SyncServerVipCookieStateMessage message, IPayloadContext context) {
         if (context.flow().isServerbound()) {

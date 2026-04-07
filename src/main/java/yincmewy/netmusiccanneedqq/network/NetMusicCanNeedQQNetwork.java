@@ -7,7 +7,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class NetMusicCanNeedQQNetwork {
-    private static final String PROTOCOL = "4";
+    private static final String PROTOCOL = "5";
 
     private NetMusicCanNeedQQNetwork() {
     }
@@ -17,6 +17,8 @@ public final class NetMusicCanNeedQQNetwork {
         registrar.playToServer(MarkQqDiscMessage.TYPE, MarkQqDiscMessage.STREAM_CODEC, MarkQqDiscMessage::handle);
         registrar.playToServer(ClearQqDiscMessage.TYPE, ClearQqDiscMessage.STREAM_CODEC, ClearQqDiscMessage::handle);
         registrar.playToClient(SyncServerVipCookieStateMessage.TYPE, SyncServerVipCookieStateMessage.STREAM_CODEC, SyncServerVipCookieStateMessage::handle);
+        registrar.playToServer(PhoneBurnMessage.TYPE, PhoneBurnMessage.STREAM_CODEC, PhoneBurnMessage::handle);
+        registrar.playToServer(PhoneAddToPlaylistMessage.TYPE, PhoneAddToPlaylistMessage.STREAM_CODEC, PhoneAddToPlaylistMessage::handle);
     }
 
     public static void sendToServer(CustomPacketPayload message) {

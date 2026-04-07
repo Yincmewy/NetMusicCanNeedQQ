@@ -10,17 +10,24 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import yincmewy.netmusiccanneedqq.Netmusiccanneedqq;
+import yincmewy.netmusiccanneedqq.config.QualityLevel;
 import yincmewy.netmusiccanneedqq.qq.QqDiscNbt;
 import yincmewy.netmusiccanneedqq.qq.QqMusicUpdater;
 
-public record MarkQqDiscMessage(String qqInput) implements CustomPacketPayload {
+public record MarkQqDiscMessage(String qqInput, QualityLevel quality) implements CustomPacketPayload {
     public static final Type<MarkQqDiscMessage> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(Netmusiccanneedqq.MODID, "mark_qq_disc"));
     public static final StreamCodec<ByteBuf, MarkQqDiscMessage> STREAM_CODEC =
-            StreamCodec.composite(ByteBufCodecs.STRING_UTF8, MarkQqDiscMessage::qqInput, MarkQqDiscMessage::new);
+            StreamCodec.composite(
+                    ByteBufCodecs.STRING_UTF8,
+                    MarkQqDiscMessage::qqInput,
+                    ByteBufCodecs.idMapper(ordinal -> QualityLevel.values()[ordinal], QualityLevel::ordinal),
+                    MarkQqDiscMessage::quality,
+                    MarkQqDiscMessage::new);
 
     public MarkQqDiscMessage {
         qqInput = qqInput == null ? "" : qqInput;
+        quality = quality == null ? QualityLevel.HIGH : quality;
     }
 
     public static void handle(MarkQqDiscMessage message, IPayloadContext context) {
@@ -34,8 +41,8 @@ public record MarkQqDiscMessage(String qqInput) implements CustomPacketPayload {
             if (sender.containerMenu instanceof CDBurnerMenu menu) {
                 ItemStack stack = menu.getInput().getStackInSlot(0);
                 if (!stack.isEmpty()) {
-                    QqDiscNbt.markQq(stack, message.qqInput());
-                    QqMusicUpdater.prefetch(message.qqInput());
+                    QqDiscNbt.markQq(stack, message.qqInput(), message.quality());
+                    QqMusicUpdater.prefetch(message.qqInput(), message.quality());
                 }
             }
         });

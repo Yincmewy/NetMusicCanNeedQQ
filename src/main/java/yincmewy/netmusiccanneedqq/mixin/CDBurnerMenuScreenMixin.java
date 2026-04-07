@@ -95,7 +95,7 @@ public abstract class CDBurnerMenuScreenMixin extends AbstractContainerScreen<Ab
             return;
         }
         try {
-            SongInfoData songInfo = QqMusicUtils.resolveSong(textField.getValue());
+            SongInfoData songInfo = QqMusicUtils.resolveSong(textField.getValue(), null, ClientConfig.getQuality());
             if (songInfo == null || !songInfo.isValid()) {
                 this.tips = Component.translatable("gui.netmusic.cd_burner.get_info_error");
                 ci.cancel();
@@ -106,7 +106,7 @@ public abstract class CDBurnerMenuScreenMixin extends AbstractContainerScreen<Ab
                 netmusiccanneedqq$showVipCookieToast();
             }
             songInfo.vip = false;
-            NetMusicCanNeedQQNetwork.sendToServer(new MarkQqDiscMessage(textField.getValue()));
+            NetMusicCanNeedQQNetwork.sendToServer(new MarkQqDiscMessage(textField.getValue(), ClientConfig.getQuality()));
             if (!NetMusicCompat.sendSongToServer(songInfo)) {
                 this.tips = Component.translatable("gui.netmusic.cd_burner.get_info_error");
             }

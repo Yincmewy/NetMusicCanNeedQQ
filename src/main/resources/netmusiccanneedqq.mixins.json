@@ -4,8 +4,10 @@
   "package": "yincmewy.netmusiccanneedqq.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "BlockMusicPlayerMixin",
     "ItemMusicCDMixin",
-    "NetMusicListItemMixin"
+    "NetMusicListItemMixin",
+    "TileEntityMusicPlayerMixin"
   ],
   "client": [
     "AbstractContainerScreenMixin",

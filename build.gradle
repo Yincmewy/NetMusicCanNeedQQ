@@ -59,7 +59,7 @@ repositories {
         }
     }
     flatDir {
-        dirs "_vendor/NetMusic/libs"
+        dirs '_vendor/NetMusic/libs'
     }
 }
 
@@ -72,10 +72,10 @@ dependencies {
     compileOnly "maven.modrinth:cloth-config:${cloth_config_version}"
     runtimeOnly "maven.modrinth:cloth-config:${cloth_config_version}"
 
-    runtimeOnly "com.googlecode.soundlibs:mp3spi:1.9.5.4"
-    runtimeOnly "com.googlecode.soundlibs:jlayer:1.0.1.4"
-    runtimeOnly "com.googlecode.soundlibs:tritonus-share:0.3.7.4"
-    runtimeOnly(name: "jflac-codec-1.5.3-SNAPSHOT", ext: "jar")
+    runtimeOnly 'com.googlecode.soundlibs:mp3spi:1.9.5.4'
+    runtimeOnly 'com.googlecode.soundlibs:jlayer:1.0.1.4'
+    runtimeOnly 'com.googlecode.soundlibs:tritonus-share:0.3.7.4'
+    runtimeOnly(name: 'jflac-codec-1.5.3-SNAPSHOT', ext: 'jar')
 }
 
 tasks.withType(ProcessResources).configureEach {
