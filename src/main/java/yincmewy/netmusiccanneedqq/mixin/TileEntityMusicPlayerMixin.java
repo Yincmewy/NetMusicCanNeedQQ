@@ -10,9 +10,13 @@ import yincmewy.netmusiccanneedqq.qq.QqMusicUpdater;
 
 @Mixin(value = TileEntityMusicPlayer.class, remap = false)
 public abstract class TileEntityMusicPlayerMixin {
-    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lcom/github/tartaricacid/netmusic/item/ItemMusicCD;getSongInfo(Lnet/minecraft/world/item/ItemStack;)Lcom/github/tartaricacid/netmusic/item/ItemMusicCD$SongInfo;"))
-    private static ItemMusicCD.SongInfo netmusiccanneedqq$refreshQqSong(ItemStack stack) {
+    @Redirect(method = "tick", at = @At(value = "INVOKE",
+            target = "Lcom/github/tartaricacid/netmusic/item/ItemMusicCD;getSongInfo(Lnet/minecraft/world/item/ItemStack;)Lcom/github/tartaricacid/netmusic/item/ItemMusicCD$SongInfo;"))
+    private static ItemMusicCD.SongInfo netmusiccanneedqq$refreshAndGetSong(ItemStack stack) {
         ItemMusicCD.SongInfo info = ItemMusicCD.getSongInfo(stack);
-        return QqMusicUpdater.refreshIfNeeded(stack, info);
+        if (info != null) {
+            return QqMusicUpdater.refreshIfNeeded(stack, info);
+        }
+        return info;
     }
 }

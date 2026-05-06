@@ -15,6 +15,7 @@ import yincmewy.netmusiccanneedqq.config.QualityLevel;
 import yincmewy.netmusiccanneedqq.data.SongInfoData;
 import yincmewy.netmusiccanneedqq.item.PhoneMenu;
 import yincmewy.netmusiccanneedqq.qq.QqDiscNbt;
+import yincmewy.netmusiccanneedqq.qq.QqMusicUpdater;
 import yincmewy.netmusiccanneedqq.qq.QqMusicUtils;
 
 public record PhoneBurnMessage(String songMid, QualityLevel quality) implements CustomPacketPayload {
@@ -56,6 +57,8 @@ public record PhoneBurnMessage(String songMid, QualityLevel quality) implements 
                     if (songInfo == null || !songInfo.isValid()) {
                         return;
                     }
+
+                    QqMusicUpdater.prefetch(message.songMid(), message.quality());
 
                     player.server.execute(() -> {
                         ItemStack current = menu.getInputStack();

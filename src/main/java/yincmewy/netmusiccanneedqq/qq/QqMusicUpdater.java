@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class QqMusicUpdater {
-    private static final long REQUEST_COOLDOWN_MS = 28_800_000L;
+    private static final long REQUEST_COOLDOWN_MS = 30 * 60 * 1000L;
     private static final ConcurrentHashMap<String, RefreshState> REFRESH_STATES = new ConcurrentHashMap<>();
     private static final ExecutorService REFRESH_EXECUTOR = Executors.newFixedThreadPool(2, new RefreshThreadFactory());
 
@@ -44,16 +44,100 @@ public final class QqMusicUpdater {
             return info;
         }
         RefreshState state = REFRESH_STATES.computeIfAbsent(qqInput, ignored -> new RefreshState());
-        SongInfoData cached = state.cachedSong;
-        if (cached != null) {
-            applyCachedSongInfo(stack, info, cached);
-        }
         long now = System.currentTimeMillis();
-        if (now - state.lastRequestAt >= REQUEST_COOLDOWN_MS) {
+        if (state.cachedSong != null && hasText(state.cachedSong.songUrl)) {
+            applyCachedSongInfo(stack, info, state.cachedSong);
+        }
+        if (state.cachedSong == null || !hasText(state.cachedSong.songUrl)) {
             QualityLevel quality = QqDiscNbt.getQuality(stack);
-            requestRefreshAsync(qqInput, state, now, quality);
+            requestRefreshSync(qqInput, state, quality);
+            if (state.cachedSong != null && hasText(state.cachedSong.songUrl)) {
+                applyCachedSongInfo(stack, info, state.cachedSong);
+            }
+        } else if (now - state.lastRequestAt >= REQUEST_COOLDOWN_MS) {
+            QualityLevel cooldownQuality = QqDiscNbt.getQuality(stack);
+            requestRefreshAsync(qqInput, state, now, cooldownQuality);
         }
         return info;
+    }
+
+    // Non-blocking: update NBT in background if URL expired, don't wait
+    public static void refreshIfNeededNonBlocking(ItemStack stack, ItemMusicCD.SongInfo info) {
+        if (info == null || !QqDiscNbt.isQqDisc(stack)) {
+            return;
+        }
+        String qqInput = QqDiscNbt.getQqInput(stack);
+        if (qqInput == null || qqInput.isBlank()) {
+            return;
+        }
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null || !server.isSameThread()) {
+            return;
+        }
+        RefreshState state = REFRESH_STATES.computeIfAbsent(qqInput, ignored -> new RefreshState());
+        if (state.cachedSong != null && hasText(state.cachedSong.songUrl)) {
+            applyCachedSongInfo(stack, info, state.cachedSong);
+        }
+        if (state.cachedSong == null || !hasText(state.cachedSong.songUrl)) {
+            // Trigger async refresh only
+            if (state.inFlight.compareAndSet(false, true)) {
+                QualityLevel quality = QqDiscNbt.getQuality(stack);
+                state.lastRequestAt = System.currentTimeMillis();
+                String serverVipCookie = VipCookieState.getServerEffectiveVipCookie();
+                REFRESH_EXECUTOR.execute(() -> {
+                    SongInfoData updated;
+                    try {
+                        updated = QqMusicUtils.resolveSong(qqInput, serverVipCookie, quality);
+                    } catch (Exception e) {
+                        Netmusiccanneedqq.LOGGER.error("Failed to refresh QQ music url (non-blocking)", e);
+                        updated = null;
+                    } finally {
+                        state.inFlight.set(false);
+                    }
+                    if (updated != null && hasText(updated.songUrl)) {
+                        state.cachedSong = copySongInfo(updated);
+                    }
+                });
+            }
+        }
+    }
+
+    private static void requestRefreshSync(String qqInput, RefreshState state, QualityLevel quality) {
+        if (!state.inFlight.compareAndSet(false, true)) {
+            // Another request is in-flight (e.g., from another player). Wait for it.
+            waitForInFlight(state);
+            return;
+        }
+        state.lastRequestAt = System.currentTimeMillis();
+        String serverVipCookie = VipCookieState.getServerEffectiveVipCookie();
+        SongInfoData updated;
+        try {
+            updated = QqMusicUtils.resolveSong(qqInput, serverVipCookie, quality);
+        } catch (Exception e) {
+            Netmusiccanneedqq.LOGGER.error("Failed to refresh QQ music url (sync)", e);
+            updated = null;
+        } finally {
+            state.inFlight.set(false);
+        }
+        if (updated != null && hasText(updated.songUrl)) {
+            state.cachedSong = copySongInfo(updated);
+        }
+    }
+
+    private static void waitForInFlight(RefreshState state) {
+        int waited = 0;
+        while (state.inFlight.get()) {
+            if (waited >= 5000) { // 5 second timeout
+                return;
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+            waited += 10;
+        }
     }
 
     private static void requestRefreshAsync(String qqInput, RefreshState state, long now, QualityLevel quality) {
@@ -63,23 +147,25 @@ public final class QqMusicUpdater {
         state.lastRequestAt = now;
         String serverVipCookie = VipCookieState.getServerEffectiveVipCookie();
         REFRESH_EXECUTOR.execute(() -> {
+            SongInfoData updated;
             try {
-                SongInfoData updated = QqMusicUtils.resolveSong(qqInput, serverVipCookie, quality);
-                if (updated == null || updated.songUrl == null || updated.songUrl.isBlank()) {
-                    return;
-                }
-                state.cachedSong = copySongInfo(updated);
+                updated = QqMusicUtils.resolveSong(qqInput, serverVipCookie, quality);
             } catch (Exception e) {
                 Netmusiccanneedqq.LOGGER.error("Failed to refresh QQ music url", e);
+                updated = null;
             } finally {
                 state.inFlight.set(false);
+            }
+            if (updated != null && hasText(updated.songUrl)) {
+                state.cachedSong = copySongInfo(updated);
             }
         });
     }
 
     private static void applyCachedSongInfo(ItemStack stack, ItemMusicCD.SongInfo target, SongInfoData source) {
         boolean changed = false;
-        if (hasText(source.songUrl) && !source.songUrl.equals(target.songUrl)) {
+        // Always update URL if we have a cached one
+        if (hasText(source.songUrl)) {
             target.songUrl = source.songUrl;
             changed = true;
         }
