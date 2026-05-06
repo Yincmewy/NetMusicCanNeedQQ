@@ -11,6 +11,7 @@ import yincmewy.netmusiccanneedqq.config.QualityLevel;
 import yincmewy.netmusiccanneedqq.data.SongInfoData;
 import yincmewy.netmusiccanneedqq.item.PhoneMenu;
 import yincmewy.netmusiccanneedqq.qq.QqDiscNbt;
+import yincmewy.netmusiccanneedqq.qq.QqMusicUpdater;
 import yincmewy.netmusiccanneedqq.qq.QqMusicUtils;
 
 import java.util.concurrent.Executors;
@@ -65,6 +66,7 @@ public class PhoneBurnMessage {
                             ItemStack current = menu.getInputStack();
                             if (current.isEmpty()) return;
                             QqDiscNbt.markQq(current, msg.songMid, msg.quality);
+                            QqMusicUpdater.prefetch(msg.songMid, msg.quality);
 
                             ItemMusicCD.SongInfo info = new ItemMusicCD.SongInfo(
                                     songInfo.songUrl, songInfo.songName, songInfo.songTime, false);

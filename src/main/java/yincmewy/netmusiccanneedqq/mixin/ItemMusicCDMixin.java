@@ -16,6 +16,9 @@ public abstract class ItemMusicCDMixin {
         if (info == null) {
             return;
         }
-        cir.setReturnValue(QqMusicUpdater.refreshIfNeeded(stack, info));
+        ItemMusicCD.SongInfo refreshed = QqMusicUpdater.refreshIfNeeded(stack, info);
+        if (refreshed != info) {
+            cir.setReturnValue(refreshed);
+        }
     }
 }

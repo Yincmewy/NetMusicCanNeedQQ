@@ -6,7 +6,9 @@
   "refmap": "netmusiccanneedqq.refmap.json",
   "mixins": [
     "ItemMusicCDMixin",
-    "NetMusicListItemMixin"
+    "NetMusicListItemMixin",
+    "BlockMusicPlayerMixin",
+    "TileEntityMusicPlayerMixin"
   ],
   "client": [
     "AbstractContainerScreenMixin",
