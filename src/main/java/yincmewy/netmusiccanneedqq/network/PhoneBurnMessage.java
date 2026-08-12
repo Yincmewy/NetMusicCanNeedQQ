@@ -62,11 +62,12 @@ public class PhoneBurnMessage {
                         SongInfoData songInfo = QqMusicUtils.resolveSong(msg.songMid, null, msg.quality);
                         if (songInfo == null || !songInfo.isValid()) return;
 
+                        QqMusicUpdater.prefetch(msg.songMid, msg.quality);
+
                         player.server.execute(() -> {
                             ItemStack current = menu.getInputStack();
                             if (current.isEmpty()) return;
                             QqDiscNbt.markQq(current, msg.songMid, msg.quality);
-                            QqMusicUpdater.prefetch(msg.songMid, msg.quality);
 
                             ItemMusicCD.SongInfo info = new ItemMusicCD.SongInfo(
                                     songInfo.songUrl, songInfo.songName, songInfo.songTime, false);

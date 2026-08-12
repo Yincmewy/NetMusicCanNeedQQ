@@ -36,6 +36,7 @@ public final class ClientConfig {
     public static void setProvider(ProviderType provider) {
         currentProvider = provider;
         DEFAULT_PROVIDER.set(provider);
+        saveConfig();
     }
 
     public static String getVipCookie() {
@@ -51,13 +52,15 @@ public final class ClientConfig {
     }
 
     public static void setQuality(QualityLevel quality) {
-        currentQuality = quality;
-        QUALITY.set(quality);
+        currentQuality = quality != null ? quality : QualityLevel.HIGH;
+        QUALITY.set(currentQuality);
+        saveConfig();
     }
 
     public static void setVipCookie(String cookie) {
         currentVipCookie = sanitizeCookie(cookie);
         VIP_COOKIE.set(currentVipCookie);
+        saveConfig();
     }
 
     private static String sanitizeCookie(String cookie) {
@@ -65,6 +68,14 @@ public final class ClientConfig {
             return "";
         }
         return cookie.trim();
+    }
+
+    private static void saveConfig() {
+        try {
+            SPEC.save();
+        } catch (RuntimeException e) {
+            Netmusiccanneedqq.LOGGER.warn("Failed to persist client config immediately", e);
+        }
     }
 
     @SubscribeEvent
