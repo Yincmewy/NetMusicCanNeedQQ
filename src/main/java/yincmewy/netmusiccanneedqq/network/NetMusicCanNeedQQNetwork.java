@@ -19,6 +19,7 @@ public final class NetMusicCanNeedQQNetwork {
         registrar.playToClient(SyncServerVipCookieStateMessage.TYPE, SyncServerVipCookieStateMessage.STREAM_CODEC, SyncServerVipCookieStateMessage::handle);
         registrar.playToServer(PhoneBurnMessage.TYPE, PhoneBurnMessage.STREAM_CODEC, PhoneBurnMessage::handle);
         registrar.playToServer(PhoneAddToPlaylistMessage.TYPE, PhoneAddToPlaylistMessage.STREAM_CODEC, PhoneAddToPlaylistMessage::handle);
+        registrar.playToClient(QqLyricMessage.TYPE, QqLyricMessage.STREAM_CODEC, QqLyricMessage::handle);
     }
 
     public static void sendToServer(CustomPacketPayload message) {

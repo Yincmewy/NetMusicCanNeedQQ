@@ -11,7 +11,8 @@
   ],
   "client": [
     "AbstractContainerScreenMixin",
-    "CDBurnerMenuScreenMixin"
+    "CDBurnerMenuScreenMixin",
+    "NetMusicSoundMixin"
   ],
   "injectors": {
     "defaultRequire": 1
