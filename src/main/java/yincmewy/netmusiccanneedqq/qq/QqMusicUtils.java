@@ -145,7 +145,17 @@ public final class QqMusicUtils {
         return new SongNameData(info.songName, info.interval);
     }
 
-    private static TrackInfo getTrackInfoByMid(String mid, String preferredCookie) {
+    /**
+     * 根据songmid获取歌曲的数字ID
+     * @param mid 歌曲的songmid
+     * @return 歌曲的数字ID，失败返回-1
+     */
+    public static int getSongIdByMid(String mid) {
+        TrackInfo info = getTrackInfoByMid(mid, null);
+        return info.songId;
+    }
+
+    static TrackInfo getTrackInfoByMid(String mid, String preferredCookie) {
         try {
             var headers = new HashMap<String, String>() {{
                 put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0");
@@ -167,6 +177,11 @@ public final class QqMusicUtils {
                     .getAsJsonObject("track_info");
             var name = trackInfo.get("name").getAsString();
             var interval = trackInfo.get("interval").getAsInt();
+            // 获取歌曲数字ID
+            int songId = -1;
+            if (trackInfo.has("id")) {
+                songId = trackInfo.get("id").getAsInt();
+            }
             boolean vip = false;
             if (trackInfo.has("pay")) {
                 var pay = trackInfo.getAsJsonObject("pay");
@@ -181,11 +196,11 @@ public final class QqMusicUtils {
                     mediaMid = file.get("media_mid").getAsString();
                 }
             }
-            return new TrackInfo(name, interval, mediaMid, vip);
+            return new TrackInfo(name, interval, mediaMid, vip, songId);
         } catch (Exception e) {
             Netmusiccanneedqq.LOGGER.error("", e);
         }
-        return new TrackInfo("", 0, "", false);
+        return new TrackInfo("", 0, "", false, -1);
     }
 
     private static JsonObject requestVkeyData(String songMid, String mediaMid, Map<String, String> requestPropertyData, FileCandidate[] candidates) throws IOException {
@@ -328,17 +343,19 @@ public final class QqMusicUtils {
         }
     }
 
-    private static final class TrackInfo {
-        private final String songName;
-        private final int interval;
-        private final String mediaMid;
-        private final boolean vip;
+    static final class TrackInfo {
+        final String songName;
+        final int interval;
+        final String mediaMid;
+        final boolean vip;
+        final int songId;
 
-        private TrackInfo(String songName, int interval, String mediaMid, boolean vip) {
+        TrackInfo(String songName, int interval, String mediaMid, boolean vip, int songId) {
             this.songName = songName;
             this.interval = interval;
             this.mediaMid = mediaMid;
             this.vip = vip;
+            this.songId = songId;
         }
     }
 }
